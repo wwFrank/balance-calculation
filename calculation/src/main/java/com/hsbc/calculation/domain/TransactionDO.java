@@ -41,6 +41,8 @@ public class TransactionDO {
     /**
      * 交易金额
      */
+    @Getter
+    @Setter
     private BigDecimal amount;
     /**
      * 交易时间
