@@ -55,7 +55,7 @@ public class TransactionIntegrationTest {
 //        userAccountRepository.save(sourceAccountDO);
 //        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, INI_BALANCE);
 //        userAccountRepository.save(targetAccountDO);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         transactionDO.setStatus(TransactionConstants.TRANSACTION_STATUS_FAILED);
         TransactionDO processTransaction = transactionService.processTransaction(transactionDO);
         // 验证结果
@@ -69,7 +69,7 @@ public class TransactionIntegrationTest {
     public void testTransactionRetry() {
         userRedisService.updateUserAccount(TEST_ACCOUNT_NUMBER, ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE));
         userRedisService.updateUserAccount(TEST_TARGET_ACCOUNT, ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, CHANGE_BALANCE));
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         transactionDO.setStatus(TransactionConstants.TRANSACTION_STATUS_FAILED);
         try {
             TransactionDO processTransaction = transactionService.processTransaction(transactionDO);
@@ -86,7 +86,7 @@ public class TransactionIntegrationTest {
     public void testTransactionalTransaction() {
         userRedisService.updateUserAccount(TEST_ACCOUNT_NUMBER, ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE));
         userRedisService.updateUserAccount(TEST_TARGET_ACCOUNT, ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, CHANGE_BALANCE));
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         transactionDO.setStatus(TransactionConstants.TRANSACTION_STATUS_FAILED);
         try {
             TransactionDO processTransaction = transactionService.processTransaction(transactionDO);
@@ -152,7 +152,7 @@ public class TransactionIntegrationTest {
     private String requestTransaction() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         String response = restTemplate.postForObject("/transaction/process", request, String.class);
         return response;

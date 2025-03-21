@@ -5,6 +5,7 @@ import com.hsbc.calculation.domain.TransactionDO;
 import com.hsbc.calculation.domain.UserAccountDO;
 import com.hsbc.calculation.repository.TransactionRepository;
 import com.hsbc.calculation.repository.UserAccountRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,10 @@ public class TransactionService {
         // 从缓存中获取余额
         String sourceNo = transaction.getSourceAccountNumber();
         String targetNo = transaction.getTargetAccountNumber();
+        if(StringUtils.equals(sourceNo, targetNo)) {
+            logger.warn("processTransaction source account and target account are the same:sourceAccount={}, targetAccount={}, amount={}",sourceNo, targetNo, transaction.getAmount());
+            throw new IllegalArgumentException("SourceAccount and TargetAccount can't be same");
+        }
         UserAccountDO sourceAccountDO = userRedisService.getUserAccountFromCache(sourceNo);
         UserAccountDO targetAccountDO = userRedisService.getUserAccountFromCache(targetNo);
 

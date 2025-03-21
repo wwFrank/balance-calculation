@@ -112,7 +112,7 @@ public class TransactionUnitTest {
 //        userAccountRepository.save(sourceAccountDO);
 //        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, INI_BALANCE);
 //        userAccountRepository.save(targetAccountDO);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         TransactionDO save = transactionRepository.save(transactionDO);
         assertEquals(true, save != null);
     }
@@ -124,7 +124,7 @@ public class TransactionUnitTest {
     public void testSourceAccountBlank() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         transactionDO.setSourceAccountNumber("");
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
@@ -135,7 +135,7 @@ public class TransactionUnitTest {
     public void testTargetAccountBlank() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT, 100);
         transactionDO.setTargetAccountNumber("");
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
@@ -146,7 +146,7 @@ public class TransactionUnitTest {
     public void testSourceAccountIllegal() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER+"1", TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER+"1", TEST_TARGET_ACCOUNT, 100);
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
         assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
@@ -156,7 +156,17 @@ public class TransactionUnitTest {
     public void testTargetAccountIllegal() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER+"1", 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_TARGET_ACCOUNT+"1", 100);
+        HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
+        TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
+        assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
+    }
+
+    @Test
+    public void testSameSourceAndTargetAccount() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
         assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
