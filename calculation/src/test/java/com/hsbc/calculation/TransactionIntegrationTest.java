@@ -106,7 +106,7 @@ public class TransactionIntegrationTest {
     public void testTransactionLimiting() {
         UserAccountDO sourceAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
         userAccountRepository.save(sourceAccountDO);
-        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, INI_BALANCE);
+        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, CHANGE_BALANCE);
         userAccountRepository.save(targetAccountDO);
         String limitingResponse = getConcurrentReq();
         assertEquals(true, StringUtils.contains(limitingResponse, TransactionConstants.SERVER_TOO_BUSY));
@@ -153,7 +153,7 @@ public class TransactionIntegrationTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
-        String response = restTemplate.postForObject("/transaction/process?userId=123", request, String.class);
+        String response = restTemplate.postForObject("/transaction/process", request, String.class);
         return response;
     }
 }

@@ -1,9 +1,11 @@
 package com.hsbc.calculation;
 
+import com.hsbc.calculation.constants.TransactionConstants;
 import com.hsbc.calculation.domain.TransactionDO;
 import com.hsbc.calculation.domain.UserAccountDO;
 import com.hsbc.calculation.repository.TransactionRepository;
 import com.hsbc.calculation.repository.UserAccountRepository;
+import com.hsbc.calculation.result.TransactionResult;
 import com.hsbc.calculation.service.UserRedisService;
 import com.hsbc.calculation.utils.ConvertUtil;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -91,6 +96,9 @@ public class TransactionUnitTest {
         assertEquals(CHANGE_BALANCE, updateUserAccountInCache != null ? updateUserAccountInCache.getBalance().intValue() : 0);
     }
 
+    /**
+     * 测试交易写入DB
+     */
     @Test
     public void testSaveTransaction() {
         UserAccountDO sourceAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
@@ -100,5 +108,37 @@ public class TransactionUnitTest {
         TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
         TransactionDO save = transactionRepository.save(transactionDO);
         assertEquals(save, save != null);
+    }
+
+    @Test
+    public void testSourceAccountBlank() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        transactionDO.setSourceAccountNumber("");
+        HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
+        TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
+        assertEquals(TransactionConstants.TRANSACTION_SOURCE_BLANK, result.getMessage());
+    }
+
+    @Test
+    public void testTargetAccountBlank() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        transactionDO.setTargetAccountNumber("");
+        HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
+        TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
+        assertEquals(TransactionConstants.TRANSACTION_TARGET_BLANK, result.getMessage());
+    }
+
+    @Test
+    public void testTargetAccountIllegal() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
+        TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
+        assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
     }
 }

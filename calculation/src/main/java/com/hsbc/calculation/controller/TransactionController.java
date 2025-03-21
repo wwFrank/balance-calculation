@@ -34,7 +34,7 @@ public class TransactionController {
             return TransactionResult.success(transactionDO);
         } catch (Exception e) {
             logger.warn("TransactionController calls transactionService.processTransaction transaction="+transaction, e);
-            return TransactionResult.error("TRANSACTION-FAILED");
+            return TransactionResult.error(TransactionConstants.TRANSACTION_SERVER_FAILED);
         }
     }
 }
