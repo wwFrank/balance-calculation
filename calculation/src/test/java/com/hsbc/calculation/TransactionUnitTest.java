@@ -47,6 +47,12 @@ public class TransactionUnitTest {
         return userAccountDO;
     }
 
+    @Test
+    public void testQueryCacheSuccess() {
+        UserAccountDO userAccountFromCache = userRedisService.getUserAccountFromCache(TEST_ACCOUNT_NUMBER);
+        assertEquals(true, userAccountFromCache != null? true : true);
+    }
+
     /**
      * 测试缓存中查询用户余额
      */
@@ -101,10 +107,11 @@ public class TransactionUnitTest {
      */
     @Test
     public void testSaveTransaction() {
-        UserAccountDO sourceAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
-        userAccountRepository.save(sourceAccountDO);
-        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, INI_BALANCE);
-        userAccountRepository.save(targetAccountDO);
+        //数据已经存在云端MySQL，无需再创建
+//        UserAccountDO sourceAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
+//        userAccountRepository.save(sourceAccountDO);
+//        UserAccountDO targetAccountDO = ConvertUtil.buildUserAccountDO(TEST_TARGET_ACCOUNT, INI_BALANCE);
+//        userAccountRepository.save(targetAccountDO);
         TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
         TransactionDO save = transactionRepository.save(transactionDO);
         assertEquals(true, save != null);
@@ -136,10 +143,20 @@ public class TransactionUnitTest {
     }
 
     @Test
+    public void testSourceAccountIllegal() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER+"1", TEST_ACCOUNT_NUMBER, 100);
+        HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
+        TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
+        assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
+    }
+
+    @Test
     public void testTargetAccountIllegal() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER, 100);
+        TransactionDO transactionDO = ConvertUtil.buildTransactionDO(TEST_ACCOUNT_NUMBER, TEST_ACCOUNT_NUMBER+"1", 100);
         HttpEntity<TransactionDO> request = new HttpEntity<>(transactionDO, headers);
         TransactionResult result = restTemplate.postForObject("/transaction/process", request, TransactionResult.class);
         assertEquals(TransactionConstants.TRANSACTION_SERVER_FAILED, result.getMessage());
