@@ -44,8 +44,10 @@ calculation ## SpringBoot工程
 │   │   │               ├── TransactionUnitTest.java ## 单元测试
 │   │   │               └── TransactionIntegrationTest.java ## 集成测试
 └── pom.xml
+
 二、架构图
 参考工程代码architecture.png图片
+
 三、功能介绍
 本系统用SpringBoot及其插件实现了一个处理金融交易并实时更新账户余额的服务，在服务中通过一下具体操作实现服务的数据一致性、高可用和扩展性：
 1、确保数据一致性和完整性，并且使用到数据库事务（spring-tx）
