@@ -1,5 +1,7 @@
 ## 一、代码结构
 ### architecture.png 架构图
+![architecture.png 架构图](https://raw.githubusercontent.com/wwFrank/balance-calculation/refs/heads/main/architecture.png)
+
 ### calculation SpringBoot工程
 ```txt
 ├── src
