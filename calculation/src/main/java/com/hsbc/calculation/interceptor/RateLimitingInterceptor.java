@@ -1,4 +1,4 @@
-package com.hsbc.calculation.intercepter;
+package com.hsbc.calculation.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hsbc.calculation.constants.TransactionConstants;
