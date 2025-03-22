@@ -2,7 +2,7 @@
 ### architecture.png 架构图
 ![architecture.png 架构图](https://raw.githubusercontent.com/wwFrank/balance-calculation/refs/heads/main/architecture.png)
 重要！重要！重要！
-系统架构视频讲解：https://v.youku.com/video?vid=XNjQ3MDY5MzY2OA%3D%3D
+系统架构视频讲解：https://v.youku.com/video?vid=XNjQ3MDc4MTgyMA%3D%3D
 
 ### calculation SpringBoot工程
 ```txt
