@@ -5,11 +5,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "user_account")
-public class UserAccountDO {
+public class UserAccountDO implements Serializable {
     @Id
     @Getter
     @Setter

@@ -38,10 +38,6 @@ public class TransactionIntegrationTest {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
-
-    @Autowired
-    private RedisTemplate<String, UserAccountDO> redisTemplate;
-
     @Autowired
     private TransactionService transactionService;
 

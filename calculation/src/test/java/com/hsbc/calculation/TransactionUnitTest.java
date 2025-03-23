@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,9 +36,6 @@ public class TransactionUnitTest {
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    @Autowired
-    private RedisTemplate<String, UserAccountDO> redisTemplate;
 
     private UserAccountDO insertAccountToDB() {
         UserAccountDO userAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
@@ -85,7 +81,6 @@ public class TransactionUnitTest {
         Optional<UserAccountDO> byId = userAccountRepository.findById(TEST_ACCOUNT_NUMBER);
         assertEquals(CHANGE_BALANCE, byId.get().getBalance().intValue());
     }
-
     /**
      * 测试更新缓存中用户余额
      */
