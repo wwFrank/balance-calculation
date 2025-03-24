@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Random;
 
 import static com.hsbc.calculation.utils.ConvertUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,9 +82,19 @@ public class TransactionUnitTest {
         Optional<UserAccountDO> byId = userAccountRepository.findById(TEST_ACCOUNT_NUMBER);
         assertEquals(CHANGE_BALANCE, byId.get().getBalance().intValue());
     }
-    /**
-     * 测试更新缓存中用户余额
-     */
+    @Test
+    public void testAccountInCache() {
+        Random random = new Random();
+        int suffix = random.nextInt();
+        UserAccountDO userAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER+suffix, INI_BALANCE);
+        userRedisService.updateUserAccount(userAccountDO.getAccountNumber(), userAccountDO);
+        UserAccountDO userAccountFromCache = userRedisService.getUserAccountFromCache(userAccountDO.getAccountNumber());
+        System.out.println(userAccountFromCache);
+        assertEquals(true, userAccountFromCache != null);
+    }
+        /**
+         * 测试更新缓存中用户余额
+         */
     @Test
     public void testUpdateAccountBalanceInCache() {
         UserAccountDO userAccountDO = ConvertUtil.buildUserAccountDO(TEST_ACCOUNT_NUMBER, INI_BALANCE);
